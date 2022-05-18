@@ -92,17 +92,24 @@ export function GoogleReCaptchaProvider({
       logWarningMessage('Error loading google recaptcha script');
     };
 
-    injectGoogleReCaptchaScript({
-      reCaptchaKey,
-      useEnterprise,
-      useRecaptchaNet,
-      scriptProps,
-      language,
-      onLoad,
-      onError
-    });
+
+    const timer = setInterval(() => {
+      if (window && (window as any).__recaptchav3 === true) {
+        injectGoogleReCaptchaScript({
+          reCaptchaKey,
+          useEnterprise,
+          useRecaptchaNet,
+          scriptProps,
+          language,
+          onLoad,
+          onError
+        });
+        clearInterval(timer);
+      }
+    }, 500);
 
     return () => {
+      clearInterval(timer);
       cleanGoogleRecaptcha(scriptId);
     };
   }, [useEnterprise, useRecaptchaNet, scriptProps, language, reCaptchaKey]);
